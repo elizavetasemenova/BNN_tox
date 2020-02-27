@@ -1,1 +1,3 @@
-# binder_julia
+# BNN_tox
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/elizavetasemenova/BNN_tox/master)
