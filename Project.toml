@@ -44,3 +44,6 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
 Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+
+[compat]
+julia = "=1.0.4"
