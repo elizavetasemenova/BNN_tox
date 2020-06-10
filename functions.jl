@@ -164,8 +164,8 @@ end
 ## Plot posterior
 ## ---------------------------------------------------------
 
-#function postplot(drug_names, post, ind, y)
-function postplot(drug_names, post, ind)
+function postplot(drug_names, post, ind, y)
+#function postplot(drug_names, post, ind)
     post_ind = post[:,ind]
 
     post_ind = vcat(0, post_ind, 1)
