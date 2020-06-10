@@ -124,9 +124,16 @@ function cumBrier(probs_mat, y)
 end
 
 
-function probsplot(drug_names, y_pred_samps, j)
+function probsplot(drug_names, y_pred_samps, j, y)
     tbl = freqtable(y_pred_samps[:,j])
     ptbl = prop(tbl)
+
+    if typeof(y) == Bool
+        title = ""
+    else
+        title = drug_names[j] * ", true category = " * string(y[j])
+    end
+
     b = bar( ptbl,
              labels="10 sin values",
              size=[250,250],
@@ -137,7 +144,7 @@ function probsplot(drug_names, y_pred_samps, j)
               yticks = true,
               framestyle = :box,
               ylimit = (0,1),
-              title = drug_names[j] * ", true category = " * string(y[j]) ,
+              title = title ,
               titlefont = font(7, "Calibri"),
               xguidefontsize=font(7, "Calibri"),
               yguidefontsize=font(7, "Calibri"),
@@ -157,6 +164,7 @@ end
 ## Plot posterior
 ## ---------------------------------------------------------
 
+#function postplot(drug_names, post, ind, y)
 function postplot(drug_names, post, ind)
     post_ind = post[:,ind]
 
@@ -213,17 +221,18 @@ end
 end
 
 
+function predict(X, y, num_samples)
 
-function predict(X,y, num_samples)
+    n = size(X, 1)
 
-    eta_post = zeros(Int(num_samples/2), length(y));
-    y_pred_samps = zeros(Int(num_samples/2), length(y));
-    y_pred = zeros(length(y));
-    logpdf_mat = zeros(Int(num_samples/2), length(y));
-    probs_mat = zeros(length(y), 3);
+    eta_post = zeros(num_samples, n);
+    y_pred_samps = zeros(num_samples, n);
+    y_pred = zeros(n);
+    logpdf_mat = zeros(num_samples, n);
+    probs_mat = zeros(n, 3);
 
-    for j in 1:length(y)
-        for i in 1:Int(num_samples/2)
+    for j in 1:n
+        for i in 1:num_samples
 
             eta_post[i, j] = nn_forward(X[j], params2[i,:], network_shape)[1]
 
@@ -234,7 +243,11 @@ function predict(X,y, num_samples)
             dist = OrderedLogistic(eta_post[i,j], c)
 
             y_pred_samps[i,j] = rand(dist)
-            logpdf_mat[i, j] = logpdf(dist, y[j])
+
+            if !(typeof(y) == Bool)
+                logpdf_mat[i, j] = logpdf(dist, y[j])
+            end
+
         end
 
         probs = [mean(y_pred_samps[:,j] .== 1), mean(y_pred_samps[:,j] .== 2), mean(y_pred_samps[:,j] .== 3)]
@@ -243,8 +256,11 @@ function predict(X,y, num_samples)
 
     end
 
-    return probs_mat, y_pred_samps, logpdf_mat, y_pred, eta_post
-
+    if !(typeof(y) == Bool)
+        return probs_mat, y_pred_samps, logpdf_mat, y_pred, eta_post
+    else
+        return probs_mat, y_pred_samps, false, y_pred, eta_post
+    end
 end
 
 
